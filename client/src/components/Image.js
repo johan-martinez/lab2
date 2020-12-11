@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import * as FormData from "form-data";
+import Alert from './Alert'
 
 class Image extends Component{
 
@@ -13,7 +14,6 @@ class Image extends Component{
         }
         this.onSubmit=this.onSubmit.bind(this)
         this.handleInput=this.handleInput.bind(this)
-        this.closeAlert=this.closeAlert.bind(this)
         this.setAlert=this.setAlert.bind(this)
         this.changePhase=this.changePhase.bind(this)
     }
@@ -26,16 +26,9 @@ class Image extends Component{
     }
 
     setAlert(msg){
-        this.setState({
-            err:msg
-        })
+        this.alertDiv.setAlert(msg)
     }
 
-    closeAlert(){
-        this.setState({
-            err:""
-        })
-    }
 
     handleInput(e){
         const {value, name}=e.target;
@@ -49,9 +42,7 @@ class Image extends Component{
             e.preventDefault()
         }
         if (this.state.phrase===""||this.state.image==="") {
-            this.setState({
-                err:"Debe rellenar todos los campos para poder enviar"
-            })
+            this.setAlert("Debe rellenar todos los campos para poder enviar")
         }else{
             var form=new FormData(document.getElementById('form-image'))
             fetch(this.props.server, {
@@ -67,31 +58,22 @@ class Image extends Component{
                 document.getElementById('img-test').src=url
                 document.getElementById('img-test').style.width="50%"
                 document.getElementById('img-test').style.height="50%"
-            }).catch((e) => console.log(e));
+            }).catch((e) => this.setAlert('Ha ocurrido un problema con el servidor'));
         }
         
     }
     
 
     render(){
-        var msg;
-        if (this.state.err!=="") {
-            msg= (
-                <div className="alert alert-danger" role="alert">
-                    {this.state.err}
-                    <button onClick={this.closeAlert} className="btn btn-danger">x</button>
-                </div>
-            )
-        }
         var form,back;
         if (this.state.phase) {
             form=(
                 <div className='row justify-content-center h-100'>
-                {msg}
                 <div className="col-sm-8 align-self-center text-left">
+                    <Alert ref={e=>{this.alertDiv=e}}/>
                     <div>
                         <div className="card-header text-center">
-                            <h5 className="card-title">Colocale un texto a una imagen</h5>
+                            <h5 className="card-title">COLOCA UN TEXTO A UNA IMAGEN</h5>
                         </div>
                         <form id="form-image">
 
@@ -134,8 +116,12 @@ class Image extends Component{
                 {back}
                 {form}
                 <br/>
-                <div id="div-image">
-                    <img id="img-test" className="card-img-top"></img>
+                <div className='row justify-content-center h-100'>
+                    <div className="col-sm-8 align-self-center text-left">
+                        <div id="div-image">
+                            <img id="img-test" className="card-img-top"></img>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

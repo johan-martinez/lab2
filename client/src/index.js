@@ -1,6 +1,16 @@
 import React, {Component} from 'react';
 import { render } from 'react-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+  } from "react-router-dom";
+
+
 import Image from './components/Image';
+import Navbar from './components/Navbar';
+import Email from './components/Email';
+import Server from './components/Server';
 
 class App extends Component{
   constructor(){
@@ -13,8 +23,24 @@ class App extends Component{
   render(){
     return (
       <div className="App">
-        <br/>
-        <Image server={this.state.server}/>
+        <Router>
+          <Navbar></Navbar>
+          <br></br>
+          <Switch>
+            <Route path="/server">
+              <Server server={this.state.server}></Server>
+            </Route>
+            <Route path="/email">
+              <Email server={this.state.server}></Email>
+            </Route>
+            <Route path="/image">
+              <Image server={this.state.server}/>
+            </Route>
+            <Route  path="/">
+              <Image server={this.state.server}/>
+            </Route>
+          </Switch>
+        </Router>
       </div>
     )
   }
