@@ -45,7 +45,7 @@ class Email extends Component{
         }
         if (this.validateData()) {
             let {email,password} =this.state
-            fetch(this.props.server, {
+            fetch(`this.props.server/email`, {
                 method: 'post',
                 body: JSON.stringify({email: email, password: password}),
             })
