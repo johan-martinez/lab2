@@ -1,50 +1,74 @@
-
-const express = require('express')
-const cors = require('cors')
-const fs = require('fs')
-const exec = require('child_process').exec;
-
-
-const pathFile = 'logs/latest.log';
-const restart_server_file = 'restart_server.sh';
-const serversUrls = [{ ip: "192.168.1.72", port: 3000 }, { ip: "192.168.1.73", port: 3000 }];
+const axios = require('axios');
+const express = require('express');
+const cors = require('cors');
 
 
 var app = express();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8000;
+
+var queueServers = [];
+var url_server = "http://localhost:3000/server"; 
 
 app.use(cors());
 app.use(express.json());
 
-// read file and send response
-app.get('/', async (req, res) => {
-    fs.readFile(pathFile, (err, data) => {
-        if (err) res.sendStatus(400);
-        else res.send(data.toString());
-    });
+
+// add server
+app.post('/server', (req, res) => {
+    // no se k hacer
+    
 });
 
-app.post('/', async (req, res) => {
-    var id = req.body.id;
-    var ip = serversUrls[id].ip;
-    exec(`ssh root@${ip} 'bash -s' < ${restart_server_file}`, (error, stdout, stderr) => {
-        if (error) res.json({ request: "error" });
-        else res.json({ request: "success" });
-    });
+// image 
+app.post('/image', async (req, res) => {
+    var server = getNextServer();
+    console.log("IMAGE - POST"+server.ip + server.port)
+    await axios.post(`http://${server.ip}:${server.port}/image`, req.body)
+        .then((response) => res.send(response.data))
+        .catch((error) => {
+            serverFailed(server);
+            res.send(error);
+        });
+    
 });
 
-function requestServers() {
-    exec(`sh request_servers.sh ${getServersUrls()}`);
+// email. decirle al server que guarde ese email
+app.post('/email', async (req, res) => {
+    var server = getNextServer();
+    await axios.post(`http://${server.ip}:${server.port}/email`, req.body)
+        .then((response) => res.send(response.data))
+        .catch((error) => {
+            serverFailed(server);
+            res.send(error);
+        });
+});
+
+
+// servidor falla - activar servicio enviar email.
+async function serverFailed(server_failed) {
+    var server = getNextServer();
+    await axios.post(`http://${server.ip}:${server.port}/server/failed`, { 
+            ip : server_failed.ip, 
+            port: server_failed.port
+        });
 }
 
-function getServersUrls() {
-    var result = "";
-    serversUrls.forEach(x => {
-        result += `${x.ip}:${x.port}/ `;
-    });
-    return result;
+function getNextServer() {
+    var server = queueServers.shift();
+    console.log(queueServers);
+    queueServers.push(server);
+    console.log(queueServers);
+    return server;
 }
+
+// consultar todos los servidores
+async function initServers() {
+    let response = await axios.get(url_server);
+    queueServers = response.data;
+    console.log(queueServers);
+}
+
 app.listen(port, () => {
     console.log(`middleware running on port ${port}`);
-    requestServers();
+    initServers();
 });

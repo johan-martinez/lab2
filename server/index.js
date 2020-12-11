@@ -11,13 +11,9 @@ const serversUrls = [{ ip: "192.168.1.72", port: 3000 }, { ip: "192.168.1.73", p
 
 
 var app = express();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8000;
 
-var express = require('express')
-var cors = require('cors')
 
-const app = express();
-const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json())
