@@ -5,7 +5,7 @@ class Success extends Component{
     constructor(props){
         super(props)
         this.state={
-            err:""
+            err:null
         }
         this.onSubmit=this.onSubmit.bind(this)
         this.setAlert=this.setAlert.bind(this)
@@ -28,7 +28,7 @@ class Success extends Component{
 
     render(){
         var msg;
-        if (this.state.err!=="") {
+        if (this.state.err!==null) {
             msg= (
                 <div className="alert alert-success text-rigth" role="alert">
                     {this.state.err}{'   '}

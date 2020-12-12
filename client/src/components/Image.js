@@ -16,12 +16,13 @@ class Image extends Component{
         this.onSubmit=this.onSubmit.bind(this)
         this.handleInput=this.handleInput.bind(this)
         this.changePhase=this.changePhase.bind(this)
+        
     }
 
     changePhase(){
         this.setState({phase:true})
-        this.alertDiv.setAlert("")
-        this.successDiv.setAlert("")
+        this.alertDiv.setAlert(null)
+        this.successDiv.setAlert(null)
         document.getElementById('img-test').src=""
         document.getElementById('img-test').style.width="0%"
         document.getElementById('img-test').style.height="0%"
@@ -71,7 +72,6 @@ class Image extends Component{
             form=(
                 <div className='row justify-content-center h-100'>
                 <div className="col-sm-8 align-self-center text-left">
-                    
                     <div>
                         <div className="card-header text-center">
                             <h5 className="card-title">COLOCA UN TEXTO A UNA IMAGEN</h5>
