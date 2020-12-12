@@ -9,7 +9,7 @@ async function addServer(ip, port) {
     server.port = port;
     let serverModel = new Server(server);
     await serverModel.save();
-    res.json(serverModel);
+    return server;
 }
 
 async function getAllServers() {
@@ -20,10 +20,12 @@ async function getAllServers() {
 // crear instancia
 route.post('/', (req, res)=>{
     res.send('instancia creada');
-//  crear instancia
-//  iniciarServidor sh
-//  addServer(ip, port);  db
-//    
+
+//  crear instancia IP 
+//  iniciarServidor sh PORT
+//  
+//  let s = addServer(ip, port);  db
+//  queueSevers.push(s)  
 });
 
 module.exports = {route, getAllServers};

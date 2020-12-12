@@ -45,14 +45,18 @@ class Email extends Component{
         }
         if (this.validateData()) {
             let {email,password} =this.state
-            fetch(`this.props.server/email`, {
+            fetch(`${this.props.server}email`, {
                 method: 'post',
-                body: JSON.stringify({email: email, password: password}),
+                body: JSON.stringify({email: email}),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
             })
             .then((response) => {
                 return response.json()
             }).then((data) => {
-                
+                alert('funciona');
             }).catch((e) => this.alertDiv.setAlert('Ha ocurrido un problema con el servidor'));
         }
         

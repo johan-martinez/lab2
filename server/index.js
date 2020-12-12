@@ -58,7 +58,7 @@ function sendImage (res,p) {
     });
 }
 
-app.post('/',(req,res)=>{
+app.post('/',(req,res)=> {    
     if (req.file) {
         jimp.read(req.file.path)
         .then(function (image) {

@@ -43,9 +43,9 @@ class Image extends Component{
         }
         if (this.state.phrase===""||this.state.image==="") {
             this.setAlert("Debe rellenar todos los campos para poder enviar")
-        }else{
+        }else {
             var form=new FormData(document.getElementById('form-image'))
-            fetch(this.props.server, {
+            fetch(`${this.props.server}/image`, {
                 method: 'post',
                 body: form,
             })
