@@ -45,7 +45,7 @@ class Image extends Component{
             this.setAlert("Debe rellenar todos los campos para poder enviar")
         }else {
             var form=new FormData(document.getElementById('form-image'))
-            fetch(`${this.props.server}/image`, {
+            fetch(`${this.props.server}image`, {
                 method: 'post',
                 body: form,
             })

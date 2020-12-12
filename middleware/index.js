@@ -1,8 +1,6 @@
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const http = require('http');
 
 const db = require('./db/Connection');
 const serverModel = require('./model/server')
@@ -22,49 +20,14 @@ app.use('/email', emailModel.route);
 app.use('/server', serverModel.route);
 
 // image 
-app.post('/image', (req, res) => {
+app.post('/image', async (req, res) => {
     var server = queueServers.shift();
-
-   
-
-    /*axios({
-        method: 'post',
-        url: `http://${server.ip}:${server.port}/`,
-        data: req,
-        responseType: 'stream'
-      }) .then(function (response) {
-        response.data.pipe(fs.createWriteStream('ada_lovelace.png'))
-      });;*/
-    
-
-    axios.post(`http://${server.ip}:${server.port}/`, req, {
+    let response = await axios.post(`http://${server.ip}:${server.port}/`, req, {
+        responseType: 'stream',
         headers: req.headers
-    })
-        .then(function (response) {
-            response.data.
-            response.data.on('open', function () {
-                res.set('Content-Type', type);
-                s.pipe(res);
-            });
-            response.data.on('close',function () {
-                res.end()
-                s.close()
-                fs.unlinkSync(`images/transform/${p}`)
-            })
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
-        /*fetch(`http://${server.ip}:${server.port}/`, {
-            method: 'post',
-            body: req.body,
-            headers: req.headers
-        })
-        .then((response) => {
-           console.log(response.blob()); 
-        });*/
-
+    });
+    response.data.pipe(res);
+    response.data.on('end', () => res.end());
     queueServers.push(server);
 });
 

@@ -16,7 +16,7 @@ class App extends Component{
   constructor(){
     super();
     this.state={
-      server:'http://localhost:5000/'
+      server:'http://localhost:8000/'
     }
   }
   
