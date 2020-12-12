@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import * as FormData from "form-data";
-import Alert from './Alert'
+import Alert from './Alert';
+import Success from './Success';
 
 class Image extends Component{
 
@@ -20,6 +21,8 @@ class Image extends Component{
 
     changePhase(){
         this.setState({phase:true})
+        this.setAlert(null)
+        this.successDiv.setAlert(null)
         document.getElementById('img-test').src=""
         document.getElementById('img-test').style.width="0%"
         document.getElementById('img-test').style.height="0%"
@@ -54,6 +57,7 @@ class Image extends Component{
                 this.render()
                 return response.blob()
             }).then((image) => {
+                this.successDiv.setAlert('La imagen se ha cargado perfectamente')
                 let url=URL.createObjectURL(image)
                 document.getElementById('img-test').src=url
                 document.getElementById('img-test').style.width="50%"
@@ -71,6 +75,7 @@ class Image extends Component{
                 <div className='row justify-content-center h-100'>
                 <div className="col-sm-8 align-self-center text-left">
                     <Alert ref={e=>{this.alertDiv=e}}/>
+                    <Success ref={e=>{this.successDiv=e}}/>
                     <div>
                         <div className="card-header text-center">
                             <h5 className="card-title">COLOCA UN TEXTO A UNA IMAGEN</h5>

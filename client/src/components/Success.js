@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-class Alert extends Component{
+class Success extends Component{
 
     constructor(props){
         super(props)
@@ -30,9 +30,9 @@ class Alert extends Component{
         var msg;
         if (this.state.err!=null) {
             msg= (
-                <div className="alert alert-danger text-rigth" role="alert">
+                <div className="alert alert-success text-rigth" role="alert">
                     {this.state.err}{'   '}
-                    <button onClick={this.onSubmit} className="btn btn-danger">x</button>
+                    <button onClick={this.onSubmit} className="btn btn-success">x</button>
                 </div>
             )
         }else{
@@ -48,4 +48,4 @@ class Alert extends Component{
     }
 }
 
-export default Alert;
+export default Success;
