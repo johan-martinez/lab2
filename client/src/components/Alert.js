@@ -22,13 +22,13 @@ class Alert extends Component{
             e.preventDefault()
         }
         this.setState({
-            err:null
+            err:""
         })
     }
 
     render(){
         var msg;
-        if (this.state.err!=null) {
+        if (this.state.err!=="") {
             msg= (
                 <div className="alert alert-danger text-rigth" role="alert">
                     {this.state.err}{'   '}
