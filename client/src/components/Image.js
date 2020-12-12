@@ -15,22 +15,19 @@ class Image extends Component{
         }
         this.onSubmit=this.onSubmit.bind(this)
         this.handleInput=this.handleInput.bind(this)
-        this.setAlert=this.setAlert.bind(this)
         this.changePhase=this.changePhase.bind(this)
     }
 
     changePhase(){
         this.setState({phase:true})
-        this.setAlert(null)
+        this.alertDiv.setAlert(null)
         this.successDiv.setAlert(null)
         document.getElementById('img-test').src=""
         document.getElementById('img-test').style.width="0%"
         document.getElementById('img-test').style.height="0%"
     }
 
-    setAlert(msg){
-        this.alertDiv.setAlert(msg)
-    }
+    
 
 
     handleInput(e){
@@ -45,7 +42,7 @@ class Image extends Component{
             e.preventDefault()
         }
         if (this.state.phrase===""||this.state.image==="") {
-            this.setAlert("Debe rellenar todos los campos para poder enviar")
+            this.alertDiv.setAlert("Debe rellenar todos los campos para poder enviar")
         }else {
             var form=new FormData(document.getElementById('form-image'))
             fetch(`${this.props.server}image`, {
@@ -62,7 +59,7 @@ class Image extends Component{
                 document.getElementById('img-test').src=url
                 document.getElementById('img-test').style.width="50%"
                 document.getElementById('img-test').style.height="50%"
-            }).catch((e) => this.setAlert('Ha ocurrido un problema con el servidor'));
+            }).catch((e) => this.alertDiv.setAlert('Ha ocurrido un problema con el servidor'));
         }
         
     }
