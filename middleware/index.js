@@ -11,7 +11,7 @@ db();
 var app = express();
 var port = process.env.PORT || 8000;
 
-var queueServers = [];
+global.queueServers = [];
 
 app.use(cors());
 app.use(express.json());
@@ -22,19 +22,25 @@ app.use('/server', serverModel.route);
 // image 
 app.post('/image', async (req, res) => {
     var server = queueServers.shift();
-    let response = await axios.post(`http://${server.ip}:${server.port}/`, req, {
-        responseType: 'stream',
-        headers: req.headers
-    });
-    response.data.pipe(res);
-    response.data.on('end', () => res.end());
+    try {
+        let response = await axios.post(`http://${server.ip}:${server.port}/`, req, {
+            responseType: 'stream',
+            headers: req.headers
+        });
+        response.data.pipe(res);
+        response.data.on('end', () => res.end());
+        console.log(`ATEND SERVER ${server.ip}`);
+    } catch { 
+        emailModel.serverFailed(server);
+        res.sendStatus(400); 
+    }
     queueServers.push(server);
 });
 
 // consultar todos los servidores
 async function initServers() {
     var servers = await serverModel.getAllServers();
-    servers.forEach(x => queueServers.push({ ip: x.ip, port: x.port }));
+    servers.forEach(x=> queueServers.push({ ip: x.ip, port: x.port }));
     console.log(queueServers);
 }
 

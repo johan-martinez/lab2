@@ -35,7 +35,7 @@ class Server extends Component{
             }).then((response) => {
                 return response.json()
             }).then((data) => {
-                this.successDiv.setAlert('El servidor se ha creado')
+                this.successDiv.setAlert('El servidor se esta creando')
             }).catch((e) => this.alertDiv.setAlert('Ha ocurrido un problema con el servidor'));
         }else{
             this.alertDiv.setAlert("Debe llenar el nombre de la instancia")

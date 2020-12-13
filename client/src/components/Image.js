@@ -53,6 +53,9 @@ class Image extends Component{
             .then((response) => {
                 this.setState({phase:false})
                 this.render()
+                if(response.status == 400){
+                    throw new Error('¡Ups!');
+                }
                 return response.blob()
             }).then((image) => {
                 this.successDiv.setAlert('La imagen se ha cargado perfectamente')

@@ -38,10 +38,7 @@ async function serverFailed(server_failed) {
         let emails = result.map(x => x.email);
         mailOptions.to = emails.join(', ');
         mailOptions.text = `Hola! se le informa que el servidor con ip ${server_failed.ip} lanzado en el puerto ${server_failed.port} no responde.`;
-        await transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.log(error);
-            else console.log(info);
-        });
+        await transporter.sendMail(mailOptions, (error, info) => {  });
     }
 }
 
