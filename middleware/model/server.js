@@ -11,7 +11,7 @@ async function addServer(ip, port) {
     server.port = port;
     let serverModel = new Server(server);
     await serverModel.save();
-    console.log(`ADD SERVICE: IP ${ip}, PORT ${port}`)
+    console.log(`ADD SERVICE: IP: ${ip}, PORT: ${port}`)
     return server;
 }
 

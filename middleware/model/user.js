@@ -17,7 +17,7 @@ var transporter = nodemailer.createTransport({
 var mailOptions = {
     from: 'monolegaltest@gmail.com',
     to: '',
-    subject: 'SERVER FAILED!',
+    subject: 'FALLO EN EL SERVIDOR!',
     text: ''
 };
 
@@ -33,12 +33,16 @@ route.post('/', async (req, res) => {
 
 // get all emails
 async function serverFailed(server_failed) {
+    console.log('SERVER FAILED. SENDING EMAILS... ')
     let result = await User.find({});
     if (result.length != 0) {
         let emails = result.map(x => x.email);
         mailOptions.to = emails.join(', ');
         mailOptions.text = `Hola! se le informa que el servidor con ip ${server_failed.ip} lanzado en el puerto ${server_failed.port} no responde.`;
-        await transporter.sendMail(mailOptions, (error, info) => {  });
+        await transporter.sendMail(mailOptions, (error, info) => { 
+            if (error) console.log('ERROR TO SEND EMAIL')
+            else console.log('SUCCESS! EMAIL SEND')
+         });
     }
 }
 

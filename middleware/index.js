@@ -1,6 +1,7 @@
 const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 
 const db = require('./db/Connection');
 const serverModel = require('./model/server')
@@ -15,6 +16,7 @@ global.queueServers = [];
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan(':date :method :url :status :response-time ms'));
 
 app.use('/email', emailModel.route);
 app.use('/server', serverModel.route);
@@ -22,6 +24,7 @@ app.use('/server', serverModel.route);
 // image 
 app.post('/image', async (req, res) => {
     var server = queueServers.shift();
+    console.log(`SELECTED SERVER: ${server.ip}`);
     try {
         let response = await axios.post(`http://${server.ip}:${server.port}/`, req, {
             responseType: 'stream',
@@ -29,10 +32,9 @@ app.post('/image', async (req, res) => {
         });
         response.data.pipe(res);
         response.data.on('end', () => res.end());
-        console.log(`ATEND SERVER ${server.ip}`);
     } catch { 
-        emailModel.serverFailed(server);
         res.sendStatus(400); 
+        emailModel.serverFailed(server);
     }
     queueServers.push(server);
 });
@@ -41,10 +43,11 @@ app.post('/image', async (req, res) => {
 async function initServers() {
     var servers = await serverModel.getAllServers();
     servers.forEach(x=> queueServers.push({ ip: x.ip, port: x.port }));
+    console.log('AVAILABLE SERVERS...');
     console.log(queueServers);
 }
 
 app.listen(port, () => {
-    console.log(`middleware running on port ${port}`);
+    console.log(`MIDDLEWARE IS RUNNING ON PORT ${port}`);
     initServers();
 });
