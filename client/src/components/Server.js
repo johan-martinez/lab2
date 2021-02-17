@@ -1,18 +1,34 @@
 import React, {Component} from 'react';
 import Alert from './Alert';
 import Success from './Success';
+import ServerData from './ServerData';
 
 class Server extends Component{
 
     constructor(props){
         super(props)
+        this.serversData,
         this.state={
-            server:""
+            server:"",
         }
         this.handleInput=this.handleInput.bind(this)
         this.onSubmit=this.onSubmit.bind(this)
     }
 
+    componentDidMount(){
+        fetch(`${this.props.server}`)
+        .then(response=>response.json())
+        .then((data)=>{
+            this.serversData=data.forEach(server => {
+                return (<div>
+                    <ServerData ip={server.ip}
+                        port={server.port}
+                        status={server.status}
+                    />
+                </div>)
+            })
+        })
+    }
     handleInput(e){
         const {value, name}=e.target;
         this.setState({
@@ -62,6 +78,10 @@ class Server extends Component{
                     <div className='card-footer text-center'>
                         <button onClick={this.onSubmit} className="btn btn-primary" >ENVIAR</button>
                     </div>
+                </div>
+                <br/>
+                <div className="row">
+                    {this.serversData}
                 </div>
             </div>
         )
