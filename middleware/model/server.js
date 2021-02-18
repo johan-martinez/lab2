@@ -19,9 +19,24 @@ route.post('/', (req, res) => {
 
 // obtener servers
 route.get('/', async (req,res)=>{
-    fs.readFile(__dirname +'/../logs/latest.log', (err, data) => {
-        if (err) res.sendStatus(400);
-        else res.send(data.toString());
+    fs.readFile(__dirname +'/../logs/latest.log', async (err, data) => {
+        if (err) res.sendStatus(400)
+        else {
+            let info=[]
+            let txt=data.toString().replace(/(\r\n|\n|\r)/gm,"").split(';')
+            await txt.forEach((server)=>{
+                if(server!=""&&server!=''){
+                    let data=server.split(' ')
+                    let urlData=data[data.length-3].split(':')
+                    info.push({
+                        ip:urlData[0],
+                        port:urlData[1].replace("/",""),
+                        status: (data[data.length-1]=="RUNNING")?true:false
+                    })
+                }
+            })
+            res.send(info)
+        }
     });
 });
 

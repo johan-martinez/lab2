@@ -5,7 +5,6 @@ class Navbar extends Component{
 
     constructor(){
         super()
-        
     }
 
     render(){

@@ -14,20 +14,20 @@ class ServerData extends Component{
     render(){
         let options;
         if (this.state.status) {
-            options=(<div className="row">
+            options=(
                 <span className="badge bg-success">ACTIVO</span>
-            </div>)
+            )
         }else{
-            options=(<div className="row">
+            options=(
                 <span className="badge bg-danger">INACTIVO</span>
-                <button className="btn btn-primary">ENCENDER</button>
-            </div>)
+            )
         }
         return (
-            <div className="row">
-                <p>{this.state.ip}:{this.state.port}</p>
-                {options}
-            </div>
+            <tr>
+                <td>{this.state.ip}</td>
+                <td>{this.state.port}</td>
+                <td>{options}</td>
+            </tr>
         )
     }
 }
