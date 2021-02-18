@@ -2,10 +2,12 @@ const axios = require('axios');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const exec = require('child_process').exec;
 
 const db = require('./db/Connection');
 const serverModel = require('./model/server')
 const emailModel = require('./model/user');
+
 
 db();
 
@@ -16,8 +18,8 @@ global.queueServers = [];
 
 app.use(cors());
 app.use(express.json());
-app.use(morgan(':date :method :url :status :response-time ms'));
 
+app.use(morgan(':date :method :url :status :response-time ms'));
 app.use('/email', emailModel.route);
 app.use('/server', serverModel.route);
 
@@ -32,22 +34,37 @@ app.post('/image', async (req, res) => {
         });
         response.data.pipe(res);
         response.data.on('end', () => res.end());
+        queueServers.push(server);
     } catch { 
         res.sendStatus(400); 
         emailModel.serverFailed(server);
     }
-    queueServers.push(server);
 });
 
-// consultar todos los servidores
 async function initServers() {
-    var servers = await serverModel.getAllServers();
-    servers.forEach(x=> queueServers.push({ ip: x.ip, port: x.port }));
-    console.log('AVAILABLE SERVERS...');
-    console.log(queueServers);
+    await serverModel.clear();
+    await serverModel.updateIP();
 }
 
-app.listen(port, () => {
-    console.log(`MIDDLEWARE IS RUNNING ON PORT ${port}`);
-    initServers();
+async function monitoring() {
+    while(true) {
+       var urls = await getServersUrls(); 
+       await exec(`sh request_servers.sh${urls}`);    
+       await serverModel.sleep(10);
+    }
+}
+
+async function getServersUrls() {
+    var result = "";
+    var serversUrls = await serverModel.getAllServers();
+    serversUrls.forEach(x => {
+        result += ` ${x.ip}:${x.port}/`;
+    });
+    return result;
+}
+
+app.listen(port, async () => {
+    console.log(`MIDDLEWARE IS RUNNING ON PORT ${port}`)
+    await initServers()
+    //monitoring();
 });

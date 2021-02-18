@@ -4,15 +4,13 @@ const route = express.Router();
 const nodemailer = require('nodemailer');
 
 var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    service: 'gmail',
     auth: {
         user: 'monolegaltest@gmail.com',
         pass: 'monolegal123'
     }
 });
+
 
 var mailOptions = {
     from: 'monolegaltest@gmail.com',
@@ -53,7 +51,8 @@ async function serverFailed(server_failed) {
     if (emails.length > 0) {
         mailOptions.to = emails.join(', ');
         mailOptions.text = `Hola! se le informa que el servidor con ip ${server_failed.ip} lanzado en el puerto ${server_failed.port} no responde.`;
-        await transporter.sendMail(mailOptions, (error, info) => {
+        
+        transporter.sendMail(mailOptions, (error, info) => {
             if (error) console.log('ERROR TO SEND EMAILS')
             else console.log('SUCCESS! EMAILS SEND')
         });
