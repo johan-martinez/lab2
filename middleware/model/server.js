@@ -4,7 +4,7 @@ const route = express.Router();
 const exec = require('child-process-async').exec;
 const fs = require('fs')
 
-var getAllServers = async () => await Server.find({})
+var getAllServers = async () => await Server.find({}, { '_id': 0, '__v': 0 })
 
 // crear instancia
 route.post('/', async (req, res) => {
