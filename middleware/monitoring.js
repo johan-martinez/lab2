@@ -1,6 +1,7 @@
 const exec = require('child-process-async').exec;
 const serverModel = require('./model/server')
 
+var sleep = (duration) => new Promise(resolve => { setTimeout(() => { resolve() }, duration * 1000) })
 
 async function initServers() {
    let servers = await serverModel.getAllServers()
@@ -13,7 +14,7 @@ async function monitoring() {
     while (true) {
         var urls = await getServersUrls();
         await exec(`sh request_servers.sh${urls}`);
-        await serverModel.sleep(10);
+        await sleep(10);
     } 
 }
 

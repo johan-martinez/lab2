@@ -47,5 +47,5 @@ async function sendImage(req, res) {
 
 app.listen(port, async () => {
     console.log(`MIDDLEWARE IS RUNNING ON PORT ${port}`)
-   // monitoring()
+    monitoring()
 });

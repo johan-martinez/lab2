@@ -26,7 +26,8 @@ coverage
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
-*/logs
+vagrant/
+
 # Bower dependency directory (https://bower.io/)
 bower_components
 
@@ -38,6 +39,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+*/vagrant/
 */node_modules/
 jspm_packages/
 

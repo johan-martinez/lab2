@@ -4,7 +4,6 @@ const route = express.Router();
 const exec = require('child-process-async').exec;
 const fs = require('fs')
 
-var sleep = (duration) => new Promise(resolve => { setTimeout(() => { resolve() }, duration * 1000) })
 var getAllServers = async () => await Server.find({})
 
 // crear instancia
@@ -20,14 +19,14 @@ route.post('/', async (req, res) => {
     } catch { console.log('ERROR TO CREATED INSTANCE') }
 });
 
-// obtener servers
+// obtener servers -> monitoring
 route.get('/', (req, res) => {
     let info = []
-    let servers =fs.readFileSync(__dirname + '/../logs/latest.log',{encoding:'utf-8'}).split('\n')
+    let servers = fs.readFileSync(__dirname + '/../logs/latest.log', { encoding: 'utf-8' }).split('\n')
     servers.forEach(x => {
-        if(x==='') return
+        if (x === '') return
         let data = x.split(' ')
-        info.push({ip:data[0].split(':')[0], port: Boolean(data[1]) })
+        info.push({ ip: data[0].split(':')[0], port: 5000, status: data[1] === 'true' })
     })
     res.json(info)
 });
@@ -45,9 +44,9 @@ async function addServer(ip, port) {
 }
 
 function getNewIP() {
-    let actual_ip = fs.readFileSync(__dirname + '/server_max_ip.txt', { encoding: 'utf-8' }).split('.')
+    let actual_ip = fs.readFileSync('./server_max_ip.txt', { encoding: 'utf-8' }).split('.')
     actual_ip[actual_ip.length - 1] = parseInt(actual_ip[actual_ip.length - 1]) + 1
     return actual_ip.join('.')
 }
 
-module.exports = { route, getAllServers, sleep };
+module.exports = { route, getAllServers };
