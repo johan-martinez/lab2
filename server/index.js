@@ -1,5 +1,4 @@
 const express = require('express')
-const cors = require('cors')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const path = require('path')
@@ -16,7 +15,6 @@ const storage=multer.diskStorage({
 
 var app=express()
 
-app.use(cors());
 app.use(bodyParser.json())
 
 app.use(multer({

@@ -53,7 +53,7 @@ class Email extends Component{
                 return response.json()
             }).then((data) => {
                 this.successDiv.setAlert('Su correo se ha almacenado')
-            }).catch((e) => this.alertDiv.setAlert('Ha ocurrido un problema con el servidor'));
+            }).catch((e) => this.alertDiv.setAlert('El correo ya existe.'));
         }
         
     }

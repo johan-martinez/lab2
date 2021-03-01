@@ -55,6 +55,8 @@ class Image extends Component{
                 this.render()
                 if(response.status == 400){
                     throw new Error('¡Ups!');
+                } else if(response.status == 400){
+                    
                 }
                 return response.blob()
             }).then((image) => {

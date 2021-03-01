@@ -1,43 +1,35 @@
 const express = require('express');
 const Server = require('../db/server');
 const route = express.Router();
-const exec = require('child_process').exec;
+const exec = require('child-process-async').exec;
 const fs = require('fs')
 
+var sleep = (duration) => new Promise(resolve => { setTimeout(() => { resolve() }, duration * 1000) })
+var getAllServers = async () => await Server.find({})
 
 // crear instancia
-route.post('/', (req, res) => {
-    res.json({});
-    let name = req.body.server;
-    const ls = exec(`sh create_instance.sh ${name}`, { shell: true });
-    ls.on('exit', async function (code) {
-        console.log("INSTANCE CREATED...")
-        await sleep(40);
-        updateIP();
-    });
+route.post('/', async (req, res) => {
+    try {
+        console.log('DOING INSTANCE');
+        res.json({})
+        let name = req.body.server, ip = getNewIP()
+        const { stdout } = await exec(`sh createInstance.sh ${name} ${ip}`)
+        await addServer(ip, 5000)
+        fs.writeFileSync('./server_max_ip.txt', ip)
+        console.log('THE INSTANCE HAS BEEN CREATED');
+    } catch { console.log('ERROR TO CREATED INSTANCE') }
 });
 
 // obtener servers
-route.get('/', async (req,res)=>{
-    fs.readFile(__dirname +'/../logs/latest.log', async (err, data) => {
-        if (err) res.sendStatus(400)
-        else {
-            let info=[]
-            let txt=data.toString().replace(/(\r\n|\n|\r)/gm,"").split(';')
-            await txt.forEach((server)=>{
-                if(server!=""&&server!=''){
-                    let data=server.split(' ')
-                    let urlData=data[data.length-3].split(':')
-                    info.push({
-                        ip:urlData[0],
-                        port:urlData[1].replace("/",""),
-                        status: (data[data.length-1]=="RUNNING")?true:false
-                    })
-                }
-            })
-            res.send(info)
-        }
-    });
+route.get('/', (req, res) => {
+    let info = []
+    let servers =fs.readFileSync(__dirname + '/../logs/latest.log',{encoding:'utf-8'}).split('\n')
+    servers.forEach(x => {
+        if(x==='') return
+        let data = x.split(' ')
+        info.push({ip:data[0].split(':')[0], port: Boolean(data[1]) })
+    })
+    res.json(info)
 });
 
 // agregar nuevo server
@@ -48,46 +40,14 @@ async function addServer(ip, port) {
     server.port = port;
     let serverModel = new Server(server);
     await serverModel.save();
-    console.log(`ADD SERVICE: IP: ${ip}, PORT: ${port}`)
+    console.log(`ADD Server: IP: ${ip}, PORT: ${port}`)
     return server;
 }
 
-async function noExist(_ip) {
-    let result = await Server.find({ ip: _ip });
-    return result.length == 0;
+function getNewIP() {
+    let actual_ip = fs.readFileSync(__dirname + '/server_max_ip.txt', { encoding: 'utf-8' }).split('.')
+    actual_ip[actual_ip.length - 1] = parseInt(actual_ip[actual_ip.length - 1]) + 1
+    return actual_ip.join('.')
 }
 
-async function clear() {
-    await Server.deleteMany({});
-}
-
-async function getAllServers() {
-    let result = await Server.find({});
-    return result;
-}
-
-async function updateIP() {
-    var ipsCommand = await exec(`sh getIP.sh`);
-    ipsCommand.stdout.on('data', (data) => {
-        var ips = data.split('\n');
-        ips.forEach(element => {
-            exec(`ping -c 1 ${element}; echo $?`, async (error, stdout, stderr) => {
-                var output = stdout.split('\n');
-                var noExi = await noExist(element);
-                if (output[output.length - 2] == 0 && noExi) {
-                    addServer(element, 5000);
-                }
-            });
-        });
-    });
-}
-
-function sleep(duration) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve()
-        }, duration * 1000)
-    })
-}
-
-module.exports = { route, getAllServers, updateIP, sleep, updateIP, clear };
+module.exports = { route, getAllServers, sleep };

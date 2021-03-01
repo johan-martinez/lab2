@@ -1,1 +1,0 @@
-sudo arp-scan --interface=wlp5s0 192.168.1.0/24 | awk '{print $1}'|tail -n +4|head -n -3 
